@@ -6,7 +6,7 @@ public enum CastlingRights {
     KING_SIDE,
     QUEEN_SIDE,
     EITHER_SIDE;
-    
+
     public boolean hasRights(Side side) {
         if (side == Side.QUEEN) {
             return this == QUEEN_SIDE || this == EITHER_SIDE;

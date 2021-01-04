@@ -1,43 +1,28 @@
 package com.github.slfotg.chess.move;
 
-import java.util.Collection;
+import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 import com.github.slfotg.chess.Board;
-import com.github.slfotg.chess.GameState;
 import com.github.slfotg.chess.enums.CastlingRights;
-import com.github.slfotg.chess.enums.Color;
+import com.github.slfotg.chess.enums.Piece;
 import com.github.slfotg.chess.enums.Position;
 
 public interface ChessMove {
 
-    /**
-     * Apply this move to the currentState and returns the resulting GameState
-     * 
-     * @param currentState
-     * @return The resulting GameState after this move is applied to currentState
-     * @throws InvalidMove
-     */
-    default GameState applyMove(GameState currentState) throws InvalidMove {
-        if (!isValid(currentState, null)) {
-            throw new InvalidMove();
-        }
-        GameState.GameStateBuilder builder = GameState.builder();
-        if (currentState.getActiveColor() == Color.WHITE) {
-            builder.activeColor(Color.BLACK);
-            builder.fullMoveNumber(currentState.getFullMoveNumber());
-            builder.whiteRights(updateCastlingRights(currentState.getWhiteRights()));
-            builder.blackRights(currentState.getBlackRights());
-        } else {
-            builder.activeColor(Color.WHITE);
-            builder.fullMoveNumber(currentState.getFullMoveNumber() + 1);
-            builder.whiteRights(currentState.getWhiteRights());
-            builder.blackRights(updateCastlingRights(currentState.getBlackRights()));
-        }
-        Board currentBoard = currentState.getBoard();
-        builder.halfMoveClock(isCapture(currentBoard) || isPawnMove() ? 0 : currentState.getHalfMoveClock() + 1);
-        builder.board(updateBoard(currentBoard).mirror());
-        return builder.build();
+    Piece getPiece();
+
+    Position[] getPath();
+
+    default Position getStartingPosition() {
+        return getPath()[0];
+    }
+
+    default Position getFinalPosition() {
+        Position[] path = getPath();
+        return path[path.length - 1];
     }
 
     /**
@@ -46,7 +31,16 @@ public interface ChessMove {
      * @param currentBoard
      * @return the Board after this move is played
      */
-    Board updateBoard(Board currentBoard);
+    default Board applyMove(Board currentBoard) {
+        Piece piece = getPiece();
+        Map<Position, Piece> currentPieces = new EnumMap<>(currentBoard.getCurrentPieces());
+        Map<Position, Piece> opponentPieces = new EnumMap<>(currentBoard.getOpponentPieces());
+        currentPieces.remove(getStartingPosition());
+        getAttackedPosition().ifPresent(opponentPieces::remove);
+        currentPieces.put(getFinalPosition(), piece);
+        return new Board(currentPieces, opponentPieces, currentBoard.getKingPosition(),
+                currentBoard.getOpponentKingPosition());
+    }
 
     /**
      * Get the updated castling rights after this move
@@ -54,7 +48,13 @@ public interface ChessMove {
      * @param currentPlayerRights
      * @return
      */
-    CastlingRights updateCastlingRights(CastlingRights currentPlayerRights);
+    default CastlingRights updateCastlingRights(CastlingRights currentPlayerRights) {
+        return currentPlayerRights;
+    }
+
+    default boolean hasCastlingRights(CastlingRights currentPlayerRights) {
+        return true;
+    }
 
     /**
      * Returns true if this move can be used as a capture. Does not necessarily mean
@@ -63,33 +63,13 @@ public interface ChessMove {
      * @return true if the move can be used to capture a piece or false if it's a
      *         pawn advance or castle
      */
-    boolean isAttackingMove();
-
-    /**
-     * Returns true if this move is technically valid (no moving through pieces, no
-     * castling through checks). It does not check if the resulting board would end
-     * in a check against the current player which is allowed in certain types of
-     * games, but those games would also result in an immediate loss by capturing
-     * the king.
-     * 
-     * @param currentState
-     * @param opponentAttacks
-     * @return
-     */
-    boolean isValid(GameState currentState, Map<Position, Collection<ChessMove>> opponentAttacks);
-
-    /**
-     * Same as isValid except this also checks if the move would result in a check
-     * against the current player.
-     * 
-     * @param currentState
-     * @param opponentAttacks
-     * @return
-     */
-    boolean isLegal(GameState currentState, Map<Position, Collection<ChessMove>> opponentAttacks);
+    default boolean isAttackingMove() {
+        return true;
+    }
 
     /**
      * Returns true if a pawn is moved
+     * 
      * @return
      */
     default boolean isPawnMove() {
@@ -98,8 +78,37 @@ public interface ChessMove {
 
     /**
      * Returns true if an opponent piece is captured
+     * 
      * @param currentBoard
      * @return
      */
-    boolean isCapture(Board currentBoard);
+    default boolean isCapture(Board currentBoard) {
+        Optional<Position> attackedPosition = getAttackedPosition();
+        if (attackedPosition.isPresent()) {
+            var opponentPieces = currentBoard.getOpponentPieces();
+            return attackedPosition.map(opponentPieces::containsKey).orElse(false);
+        }
+        return false;
+    }
+
+    /**
+     * Returns an optional list of positions that cannot be under attack in order to
+     * apply this move (for castling)
+     * 
+     * @return
+     */
+    default Optional<List<Position>> getCastlingPositions() {
+        return Optional.empty();
+    }
+
+    default Optional<Position> enPassantPosition() {
+        return Optional.empty();
+    }
+
+    default Optional<Position> getAttackedPosition() {
+        if (isAttackingMove()) {
+            return Optional.of(getFinalPosition());
+        }
+        return Optional.empty();
+    }
 }

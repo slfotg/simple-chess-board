@@ -8,25 +8,40 @@ import com.github.slfotg.chess.enums.CastlingRights;
 import com.github.slfotg.chess.enums.Piece;
 import com.github.slfotg.chess.enums.Position;
 
-public class KingMove extends PieceMove {
+import lombok.AllArgsConstructor;
 
-    private Position end;
+@AllArgsConstructor
+class KingMove implements ChessMove {
 
-    public KingMove(Position start, Position end) {
-        super(Piece.KING, start, end);
-        this.end = end;
+    private final Position[] path;
+
+    @Override
+    public Piece getPiece() {
+        return Piece.KING;
     }
 
     @Override
-    public Board updateBoard(Board currentBoard) {
+    public Position[] getPath() {
+        return path;
+    }
+
+    @Override
+    public Board applyMove(Board currentBoard) {
         Map<Position, Piece> currentPieces = new EnumMap<>(currentBoard.getCurrentPieces());
         Map<Position, Piece> opponentPieces = new EnumMap<>(currentBoard.getOpponentPieces());
-        return new Board(currentPieces, opponentPieces, end, currentBoard.getOpponentKingPosition());
+        opponentPieces.remove(path[path.length - 1]);
+        return new Board(currentPieces, opponentPieces, path[path.length - 1],
+                currentBoard.getOpponentKingPosition());
     }
 
     @Override
     public CastlingRights updateCastlingRights(CastlingRights currentPlayerRights) {
         return CastlingRights.NONE;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("K: %s -> %s", getStartingPosition(), getFinalPosition());
     }
 
 }
