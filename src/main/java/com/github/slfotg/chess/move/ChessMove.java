@@ -83,12 +83,9 @@ public interface ChessMove {
      * @return
      */
     default boolean isCapture(Board currentBoard) {
-        Optional<Position> attackedPosition = getAttackedPosition();
-        if (attackedPosition.isPresent()) {
-            var opponentPieces = currentBoard.getOpponentPieces();
-            return attackedPosition.map(opponentPieces::containsKey).orElse(false);
-        }
-        return false;
+        var attackedPosition = getAttackedPosition();
+        var opponentPieces = currentBoard.getOpponentPieces();
+        return attackedPosition.map(opponentPieces::containsKey).orElse(false);
     }
 
     /**
