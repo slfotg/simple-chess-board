@@ -19,7 +19,7 @@ import com.github.slfotg.chess.util.PositionInverter;
 
 public class ChessMoveGenerator {
 
-    private final PositionInverter positionInverter = new PositionInverter();
+    private final PositionInverter positionInverter;
     private final Map<Position, Collection<ChessMove>> allPawnMoves;
     private final Map<Position, Collection<ChessMove>> allKnightMoves;
     private final Map<Position, Collection<ChessMove>> allBishopMoves;
@@ -27,7 +27,8 @@ public class ChessMoveGenerator {
     private final Map<Position, Collection<ChessMove>> allQueenMoves;
     private final Map<Position, Collection<ChessMove>> allKingMoves;
 
-    public ChessMoveGenerator() {
+    public ChessMoveGenerator(PositionInverter positionInverter) {
+        this.positionInverter = positionInverter;
         DiagonalMoveGenerator diagonalMoveGenerator = new DiagonalMoveGenerator();
         StraightMoveGenerator straightMoveGenerator = new StraightMoveGenerator();
         allPawnMoves = generateAllPawnMoves();
