@@ -23,13 +23,14 @@ class RookMove implements ChessMove {
 
     @Override
     public CastlingRights updateCastlingRights(CastlingRights currentPlayerRights) {
-        if (path[0] == Position.A1) {
+        switch (getStartingPosition()) {
+        case A1:
             return currentPlayerRights.removeQueenSideRights();
-        }
-        if (path[0] == Position.H1) {
+        case H1:
             return currentPlayerRights.removeKingSideRights();
+        default:
+            return currentPlayerRights;
         }
-        return currentPlayerRights;
     }
 
     @Override

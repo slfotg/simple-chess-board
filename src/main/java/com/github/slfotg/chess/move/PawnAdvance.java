@@ -36,8 +36,8 @@ class PawnAdvance implements ChessMove {
     public Board applyMove(Board currentBoard) {
         Map<Position, Piece> currentPieces = new EnumMap<>(currentBoard.getCurrentPieces());
         Map<Position, Piece> opponentPieces = new EnumMap<>(currentBoard.getOpponentPieces());
-        currentPieces.remove(path[0]);
-        currentPieces.put(path[path.length - 1], finalPiece);
+        currentPieces.remove(getStartingPosition());
+        currentPieces.put(getFinalPosition(), finalPiece);
         return new Board(currentPieces, opponentPieces, currentBoard.getKingPosition(),
                 currentBoard.getOpponentKingPosition());
     }
@@ -54,8 +54,8 @@ class PawnAdvance implements ChessMove {
 
     @Override
     public Optional<Position> enPassantPosition() {
-        if (path.length == 3) {
-            return Optional.of(path[1]);
+        if (getPath().length == 3) {
+            return Optional.of(getPath()[1]);
         }
         return Optional.empty();
     }

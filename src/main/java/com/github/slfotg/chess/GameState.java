@@ -12,13 +12,15 @@ import com.github.slfotg.chess.util.PositionInverter;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NonNull;
 
 @AllArgsConstructor
 @Builder
 @Getter
-public class GameState {
+@EqualsAndHashCode
+public final class GameState {
 
     private static final PositionInverter POSITION_INVERTER = new PositionInverter();
     private static final ChessMoveGenerator MOVE_GENERATOR = new ChessMoveGenerator(POSITION_INVERTER);
@@ -26,7 +28,9 @@ public class GameState {
     @NonNull
     private final Color activeColor;
     private final Position enPassant;
+    @EqualsAndHashCode.Exclude
     private final int halfMoveClock;
+    @EqualsAndHashCode.Exclude
     private final int fullMoveNumber;
     @NonNull
     private final Board board;

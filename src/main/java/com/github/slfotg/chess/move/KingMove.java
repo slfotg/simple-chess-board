@@ -29,8 +29,8 @@ class KingMove implements ChessMove {
     public Board applyMove(Board currentBoard) {
         Map<Position, Piece> currentPieces = new EnumMap<>(currentBoard.getCurrentPieces());
         Map<Position, Piece> opponentPieces = new EnumMap<>(currentBoard.getOpponentPieces());
-        opponentPieces.remove(path[path.length - 1]);
-        return new Board(currentPieces, opponentPieces, path[path.length - 1],
+        opponentPieces.remove(getFinalPosition());
+        return new Board(currentPieces, opponentPieces, getFinalPosition(),
                 currentBoard.getOpponentKingPosition());
     }
 

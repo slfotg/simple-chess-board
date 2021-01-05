@@ -1,9 +1,13 @@
 package com.github.slfotg.chess.util;
 
 import java.util.EnumMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import com.github.slfotg.chess.Board;
+import com.github.slfotg.chess.enums.CastlingRights;
 import com.github.slfotg.chess.enums.Piece;
 import com.github.slfotg.chess.enums.Position;
 import com.github.slfotg.chess.move.ChessMove;
@@ -91,6 +95,10 @@ public class PositionInverter {
         return mirrorMap.get(position);
     }
 
+    public List<Position> invertPositions(List<Position> positions) {
+        return positions.stream().map(this::invertPosition).collect(Collectors.toList());
+    }
+
     public Board invertBoard(Board board) {
         var mirrorCurrentPieces = new EnumMap<Position, Piece>(Position.class);
         board.getOpponentPieces()
@@ -129,6 +137,46 @@ public class PositionInverter {
                 path[i] = positionInverter.invertPosition(originalPath[i]);
             }
             return path;
+        }
+
+        @Override
+        public Board applyMove(Board currentBoard) {
+            return positionInverter.invertBoard(chessMove.applyMove(positionInverter.invertBoard(currentBoard)));
+        }
+
+        @Override
+        public CastlingRights updateCastlingRights(CastlingRights currentPlayerRights) {
+            return chessMove.updateCastlingRights(currentPlayerRights);
+        }
+
+        @Override
+        public boolean hasCastlingRights(CastlingRights currentPlayerRights) {
+            return chessMove.hasCastlingRights(currentPlayerRights);
+        }
+
+        @Override
+        public boolean isAttackingMove() {
+            return chessMove.isAttackingMove();
+        }
+
+        @Override
+        public boolean isPawnMove() {
+            return chessMove.isPawnMove();
+        }
+
+        @Override
+        public Optional<List<Position>> getCastlingPositions() {
+            return chessMove.getCastlingPositions().map(positionInverter::invertPositions);
+        }
+
+        @Override
+        public Optional<Position> enPassantPosition() {
+            return chessMove.enPassantPosition().map(positionInverter::invertPosition);
+        }
+
+        @Override
+        public Optional<Position> getAttackedPosition() {
+            return chessMove.getAttackedPosition().map(positionInverter::invertPosition);
         }
     }
 }
