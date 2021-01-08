@@ -22,7 +22,7 @@ class BishopMove implements ChessMove {
 
     @Override
     public String toString() {
-        return String.format("B: %s -> %s", getStartingPosition(), getFinalPosition());
+        return stringValue();
     }
 
 }

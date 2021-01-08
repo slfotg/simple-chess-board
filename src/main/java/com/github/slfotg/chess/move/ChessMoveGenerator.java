@@ -135,7 +135,7 @@ public class ChessMoveGenerator {
         return possibleMoves;
     }
 
-    private List<Position> getOpponentAttacks(Board board) {
+    public List<Position> getOpponentAttacks(Board board) {
         Board invertedBoard = positionInverter.invertBoard(board);
         // @formatter:off
         return getAllPossibleMoves(invertedBoard).stream()

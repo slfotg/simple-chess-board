@@ -33,8 +33,16 @@ class PawnCapture implements ChessMove {
 
     @Override
     public Board applyMove(Board currentBoard) {
-        Map<Position, Piece> currentPieces = new EnumMap<>(currentBoard.getCurrentPieces());
-        Map<Position, Piece> opponentPieces = new EnumMap<>(currentBoard.getOpponentPieces());
+        // @formatter:off
+        Map<Position, Piece> currentPieces =
+                currentBoard.getCurrentPieces().isEmpty()
+                ? new EnumMap<>(Position.class)
+                : new EnumMap<>(currentBoard.getCurrentPieces());
+        Map<Position, Piece> opponentPieces =
+                currentBoard.getOpponentPieces().isEmpty()
+                ? new EnumMap<>(Position.class)
+                : new EnumMap<>(currentBoard.getOpponentPieces());
+        // @formatter:off
         currentPieces.remove(getStartingPosition());
         getAttackedPosition().ifPresent(opponentPieces::remove);
         currentPieces.put(getFinalPosition(), finalPiece);
@@ -59,7 +67,7 @@ class PawnCapture implements ChessMove {
 
     @Override
     public String toString() {
-        return String.format("P: %s -> %s", getStartingPosition(), getFinalPosition());
+        return stringValue();
     }
 
 }

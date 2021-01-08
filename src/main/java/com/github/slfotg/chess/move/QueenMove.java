@@ -37,7 +37,7 @@ class QueenMove implements ChessMove {
 
     @Override
     public String toString() {
-        return String.format("Q: %s -> %s", getStartingPosition(), getFinalPosition());
+        return stringValue();
     }
 
 }

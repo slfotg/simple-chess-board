@@ -23,8 +23,14 @@ public class Board {
 
     public Board(Map<Position, Piece> currentPieces, Map<Position, Piece> opponentPieces, Position kingPosition,
             Position oponentKingPosition) {
-        this.currentPieces = new EnumMap<>(currentPieces);
-        this.opponentPieces = new EnumMap<>(opponentPieces);
+        this.currentPieces =
+                currentPieces.isEmpty()
+                ? new EnumMap<>(Position.class)
+                : new EnumMap<>(currentPieces);
+        this.opponentPieces =
+                opponentPieces.isEmpty()
+                ? new EnumMap<>(Position.class)
+                : new EnumMap<>(opponentPieces);
         this.kingPosition = kingPosition;
         this.opponentKingPosition = oponentKingPosition;
     }

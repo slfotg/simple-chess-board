@@ -178,5 +178,13 @@ public class PositionInverter {
         public Optional<Position> getAttackedPosition() {
             return chessMove.getAttackedPosition().map(positionInverter::invertPosition);
         }
+
+        @Override
+        public String toString() {
+            if (chessMove.toString().startsWith("0")) {
+                return chessMove.toString();
+            }
+            return stringValue();
+        }
     }
 }

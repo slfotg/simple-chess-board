@@ -37,7 +37,7 @@ class EnPassantCapture implements ChessMove {
 
     @Override
     public String toString() {
-        return String.format("P: %s -> %s", getStartingPosition(), getFinalPosition());
+        return stringValue();
     }
 
 }

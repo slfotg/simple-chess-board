@@ -23,7 +23,7 @@ class KnightMove implements ChessMove {
 
     @Override
     public String toString() {
-        return String.format("N: %s -> %s", getStartingPosition(), getFinalPosition());
+        return stringValue();
     }
 
 }

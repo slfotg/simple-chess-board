@@ -29,8 +29,16 @@ class KingSideCastle implements ChessMove {
 
     @Override
     public Board applyMove(Board currentBoard) {
-        Map<Position, Piece> currentPieces = new EnumMap<>(currentBoard.getCurrentPieces());
-        Map<Position, Piece> opponentPieces = new EnumMap<>(currentBoard.getOpponentPieces());
+        // @formatter:off
+        Map<Position, Piece> currentPieces =
+                currentBoard.getCurrentPieces().isEmpty()
+                ? new EnumMap<>(Position.class)
+                : new EnumMap<>(currentBoard.getCurrentPieces());
+        Map<Position, Piece> opponentPieces =
+                currentBoard.getOpponentPieces().isEmpty()
+                ? new EnumMap<>(Position.class)
+                : new EnumMap<>(currentBoard.getOpponentPieces());
+        // @formatter:on
         currentPieces.remove(Position.H1);
         currentPieces.put(Position.F1, Piece.ROOK);
         return new Board(currentPieces, opponentPieces, Position.G1, currentBoard.getOpponentKingPosition());
@@ -63,7 +71,7 @@ class KingSideCastle implements ChessMove {
 
     @Override
     public String toString() {
-        return "O-O";
+        return "0-0";
     }
 
 }

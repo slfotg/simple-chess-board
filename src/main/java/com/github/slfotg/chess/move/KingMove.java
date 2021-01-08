@@ -27,8 +27,16 @@ class KingMove implements ChessMove {
 
     @Override
     public Board applyMove(Board currentBoard) {
-        Map<Position, Piece> currentPieces = new EnumMap<>(currentBoard.getCurrentPieces());
-        Map<Position, Piece> opponentPieces = new EnumMap<>(currentBoard.getOpponentPieces());
+        // @formatter:off
+        Map<Position, Piece> currentPieces =
+                currentBoard.getCurrentPieces().isEmpty()
+                ? new EnumMap<>(Position.class)
+                : new EnumMap<>(currentBoard.getCurrentPieces());
+        Map<Position, Piece> opponentPieces =
+                currentBoard.getOpponentPieces().isEmpty()
+                ? new EnumMap<>(Position.class)
+                : new EnumMap<>(currentBoard.getOpponentPieces());
+        // @formatter:on
         opponentPieces.remove(getFinalPosition());
         return new Board(currentPieces, opponentPieces, getFinalPosition(),
                 currentBoard.getOpponentKingPosition());
@@ -41,7 +49,7 @@ class KingMove implements ChessMove {
 
     @Override
     public String toString() {
-        return String.format("K: %s -> %s", getStartingPosition(), getFinalPosition());
+        return stringValue();
     }
 
 }

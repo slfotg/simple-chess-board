@@ -33,8 +33,16 @@ public interface ChessMove {
      */
     default Board applyMove(Board currentBoard) {
         Piece piece = getPiece();
-        Map<Position, Piece> currentPieces = new EnumMap<>(currentBoard.getCurrentPieces());
-        Map<Position, Piece> opponentPieces = new EnumMap<>(currentBoard.getOpponentPieces());
+        // @formatter:off
+        Map<Position, Piece> currentPieces =
+                currentBoard.getCurrentPieces().isEmpty()
+                ? new EnumMap<>(Position.class)
+                : new EnumMap<>(currentBoard.getCurrentPieces());
+        Map<Position, Piece> opponentPieces =
+                currentBoard.getOpponentPieces().isEmpty()
+                ? new EnumMap<>(Position.class)
+                : new EnumMap<>(currentBoard.getOpponentPieces());
+        // @formatter:on
         currentPieces.remove(getStartingPosition());
         getAttackedPosition().ifPresent(opponentPieces::remove);
         currentPieces.put(getFinalPosition(), piece);
@@ -107,5 +115,9 @@ public interface ChessMove {
             return Optional.of(getFinalPosition());
         }
         return Optional.empty();
+    }
+
+    default String stringValue() {
+        return String.format("%s: %s -> %s", getPiece(), getStartingPosition(), getFinalPosition());
     }
 }

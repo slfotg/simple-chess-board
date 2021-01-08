@@ -35,7 +35,7 @@ class RookMove implements ChessMove {
 
     @Override
     public String toString() {
-        return String.format("R: %s -> %s", getStartingPosition(), getFinalPosition());
+        return stringValue();
     }
 
 }
