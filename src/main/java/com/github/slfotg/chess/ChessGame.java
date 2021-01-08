@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import com.github.slfotg.chess.enums.CastlingRights;
 import com.github.slfotg.chess.enums.Color;
 import com.github.slfotg.chess.enums.Result;
+import com.github.slfotg.chess.move.ChessMove;
 
 public class ChessGame {
 
@@ -71,12 +72,20 @@ public class ChessGame {
         return null;
     }
 
+    public List<ChessMove> getPossibleMoves() {
+        return gameState.getPossibleMoves();
+    }
+
     public List<ChessGame> nextPossibleChessGames() {
         // @formatter:off
         return gameState.nextPossibleStates()
                 .stream()
                 .map(s -> new ChessGame(s, previousStates))
                 .collect(Collectors.toList());
-        // @fomatter:on
+        // @formatter:on
+    }
+
+    public ChessGame applyMove(ChessMove move) {
+        return new ChessGame(gameState.applyMove(move), previousStates);
     }
 }
